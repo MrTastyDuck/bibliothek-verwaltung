@@ -6,6 +6,7 @@ $database = "bibl";
 
 $db = mysqli_connect($server, $user, $pass, $database) or die("Verbindungsprobleme");
 
+// SORTIEREN
 $allowed_orders = ['isbn', 'titel', 'autor'];
 $order = '';
 
@@ -13,8 +14,23 @@ if (isset($_GET['abschicken']) && isset($_GET['auswahl']) && in_array($_GET['aus
     $order = $_GET['auswahl'];
 }
 
-$search = $_GET['titel'] ?? '';
+$search = $_GET['search_titel'] ?? '';
 
+// HINZUFÜGEN
+if (isset($_GET['add'])) {
+    $isbn = mysqli_real_escape_string($db, $_GET['add_isbn']);
+    $titel = mysqli_real_escape_string($db, $_GET['add_titel']);
+    $autor = mysqli_real_escape_string($db, $_GET['add_autor']);
+    $beschreibung = mysqli_real_escape_string($db, $_GET['add_beschreibung']);
+
+    if ($isbn !== "" && $titel !== "" && $autor !== "" && $beschreibung !== "") {
+        $sql_insert = "INSERT INTO book (isbn, titel, autor, beschreibung)
+                   VALUES ('$isbn', '$titel', '$autor', '$beschreibung')";
+        mysqli_query($db, $sql_insert);
+    }
+}
+
+// SUCHEN
 $sql = "SELECT isbn, titel, autor, beschreibung FROM book";
 $filter = [];
 
@@ -73,9 +89,26 @@ mysqli_close($db);
         <button type="submit" name="abschicken">Sortieren</button>
     </form>
 
+    <h1>Hinzufügen</h1>
+    <form method="get">
+        <label for="isbn">ISBN: </label>
+        <input type="text" name="add_isbn" placeholder="ISBN" id="isbn"> <br>
+        <br>
+        <label for="titel">Titel: </label>
+        <input type="text" name="add_titel" placeholder="Titel" id="titel"> <br>
+        <br>
+        <label for="autor">Autor: </label>
+        <input type="text" name="add_autor" placeholder="Autor" id="autor"> <br>
+        <br>
+        <label for="beschreibung">Beschreibung: </label>
+        <input type="textarea" name="add_beschreibung" placeholder="Beschreibung" id="beschreibung"> <br>
+        <br>
+        <button type="submit" name="add">Hizufügen</button>
+    </form>
+
     <h1>Sucehn</h1>
     <form method="get">
-        <input type="text" name="titel" value="<?= htmlspecialchars($search) ?>">
+        <input type="text" name="search_titel" value="<?= htmlspecialchars($search) ?>">
         <button type="submit">Suchen</button>
     </form>
 

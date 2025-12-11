@@ -106,7 +106,7 @@ mysqli_close($db);
         <button type="submit" name="add">Hizufügen</button>
     </form>
 
-    <h1>Sucehn</h1>
+    <h1>Suchen</h1>
     <form method="get">
         <input type="text" name="search_titel" value="<?= htmlspecialchars($search) ?>">
         <button type="submit">Suchen</button>

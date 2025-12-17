@@ -223,7 +223,11 @@ if (isset($_GET['delete'])) {
                         <input class="form-control mb-2" name="edit_verlag" value="<?= $buch['verlag'] ?>">
                         <input class="form-control mb-2" name="edit_genre" value="<?= $buch['genre'] ?>">
                         <textarea class="form-control mb-2" name="edit_beschreibung"><?= $buch['beschreibung'] ?></textarea>
-                        <input class="form-control mb-2" name="edit_status" value="<?= $buch['status'] ?>">
+                        <select name="edit_status" class="form-select w-auto">
+                            <option value="verfügbar">Verfügbar</option>
+                            <option value="ausgeliehen">Ausgeliehen</option>
+                            <option value="reserviert">Reserviert</option>
+                        </select>
 
                         <button class="btn btn-primary" name="edit">Speichern</button>
                     </form>

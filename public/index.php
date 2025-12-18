@@ -94,7 +94,7 @@ if (isset($_GET['delete'])) {
     <title>Bücherverwaltung</title>
 
     <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> 
 </head>
 
 <body class="bg-light">
@@ -111,7 +111,7 @@ if (isset($_GET['delete'])) {
                         <option value="isbn">ISBN</option>
                         <option value="titel">Titel</option>
                         <option value="autor">Autor</option>
-                        <option value="verlag">verlag</option>
+                        <option value="verlag">Verlag</option>
                         <option value="status">Status</option>
 
                     </select>

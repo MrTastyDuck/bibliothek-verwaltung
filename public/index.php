@@ -217,7 +217,6 @@ if (isset($_GET['delete'])) {
                 <div class="card-body">
                     <form method="get">
                         <input type="hidden" name="old_isbn" value="<?= $buch['isbn'] ?>">
-                        <input class="form-control mb-2" name="edit_isbn" value="<?= $buch['isbn'] ?>">
                         <input class="form-control mb-2" name="edit_titel" value="<?= $buch['titel'] ?>">
                         <input class="form-control mb-2" name="edit_autor" value="<?= $buch['autor'] ?>">
                         <input class="form-control mb-2" name="edit_verlag" value="<?= $buch['verlag'] ?>">

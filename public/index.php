@@ -6,6 +6,14 @@ $database = "bibl";
 
 $db = mysqli_connect($server, $user, $pass, $database) or die("Verbindungsprobleme");
 
+// STATISTIK
+$gesamtzahl_buecher_sql = mysqli_query($db, "SELECT COUNT(*) FROM t_book");
+$gesamtzahl_buecher = mysqli_fetch_row($gesamtzahl_buecher_sql)[0];
+
+$gesamtzahl_kunden_sql = mysqli_query($db, "SELECT COUNT(*) FROM t_user");
+$gesamtzahl_kunden = mysqli_fetch_row($gesamtzahl_kunden_sql)[0];
+
+
 // SORTIEREN
 $allowed_orders = ['isbn', 'titel', 'autor', 'verlag', 'status', 'buch_nr'];
 $order = '';
@@ -16,7 +24,7 @@ if (isset($_GET['abschicken'], $_GET['auswahl']) && in_array($_GET['auswahl'], $
 
 $search = $_GET['search_titel'] ?? '';
 
-// HINZUFÜGEN
+// HINZUFÜGEN BUCH
 if (isset($_GET['add'])) {
     $nr = mysqli_real_escape_string($db, $_GET['add_nr']);
     $isbn = mysqli_real_escape_string($db, $_GET['add_isbn']);
@@ -93,8 +101,7 @@ if (isset($_GET['delete'])) {
     <meta charset="UTF-8">
     <title>Bücherverwaltung</title>
 
-    <!-- Bootstrap 5 -->
-     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
@@ -102,139 +109,173 @@ if (isset($_GET['delete'])) {
 
         <h1 class="mb-4"> Bücherverwaltung</h1>
 
-        <!-- SORTIEREN -->
-        <div class="card mb-3">
-            <div class="card-body">
-                <form method="get" class="d-flex gap-3">
-                    <select name="auswahl" class="form-select w-auto">
-                        <option value="buch_nr">Nr</option>
-                        <option value="isbn">ISBN</option>
-                        <option value="titel">Titel</option>
-                        <option value="autor">Autor</option>
-                        <option value="verlag">Verlag</option>
-                        <option value="status">Status</option>
+        <!-- NAVBAR -->
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-books">
+                    Bücher
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-customers">
+                    Kunden
+                </button>
+            </li>
+        </ul>
 
-                    </select>
-                    <button class="btn btn-primary" name="abschicken">Sortieren</button>
-                </form>
-            </div>
-        </div>
+        <div class="tab-content">
 
-        <!-- HINZUFÜGEN -->
-        <div class="card mb-3">
-            <div class="card-header">Buch hinzufügen</div>
-            <div class="card-body">
-                <form method="get" class="row g-3">
-                    <div class="col-md-6">
-                        <input class="form-control" name="add_nr" placeholder="Nr">
-                    </div>
-                    <div class="col-md-6">
-                        <input class="form-control" name="add_isbn" placeholder="ISBN">
-                    </div>
-                    <div class="col-md-6">
-                        <input class="form-control" name="add_titel" placeholder="Titel">
-                    </div>
-                    <div class="col-md-6">
-                        <input class="form-control" name="add_autor" placeholder="Autor">
-                    </div>
-                    <div class="col-md-6">
-                        <input class="form-control" name="add_verlag" placeholder="Verlag">
-                    </div>
-                    <div class="col-md-6">
-                        <input class="form-control" name="add_genre" placeholder="Genre">
-                    </div>
-                    <div class="col-md-6">
-                        <textarea class="form-control" name="add_beschreibung" placeholder="Beschreibung"></textarea>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="add_status">Status: </label>
-                        <select name="add_status" class="form-select w-auto">
-                            <option value="verfügbar">Verfügbar</option>
-                            <option value="ausgeliehen">Ausgeliehen</option>
-                            <option value="reserviert">Reserviert</option>
-                        </select>
-                    </div>
-                    <div class="col-12">
-                        <button class="btn btn-success" name="add">Hinzufügen</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+            <!-- TAB 1: -->
+            <div class="tab-pane fade show active" id="tab-books">
 
-        <!-- SUCHEN -->
-        <form method="get" class="input-group mb-3">
-            <input class="form-control" name="search_titel" value="<?= htmlspecialchars($search) ?>" placeholder="Titel suchen">
-            <button class="btn btn-outline-secondary">Suchen</button>
-        </form>
-
-        <!-- TABELLE -->
-        <table class="table table-striped table-bordered">
-            <thead class="table-dark">
-                <tr>
-                    <th>Nr</th>
-                    <th>ISBN</th>
-                    <th>Titel</th>
-                    <th>Autor</th>
-                    <th>Verlag</th>
-                    <th>Genre</th>
-                    <th>Beschreibung</th>
-                    <th>Status</th>
-                    <th>Aktion</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($rows as $r): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($r['buch_nr']) ?></td>
-                        <td><?= htmlspecialchars($r['isbn']) ?></td>
-                        <td><?= htmlspecialchars($r['titel']) ?></td>
-                        <td><?= htmlspecialchars($r['autor']) ?></td>
-                        <td><?= htmlspecialchars($r['verlag']) ?></td>
-                        <td><?= htmlspecialchars($r['genre']) ?></td>
-                        <td><?= htmlspecialchars($r['beschreibung']) ?></td>
-                        <td><?= htmlspecialchars($r['status']) ?></td>
-                        <td class="d-flex gap-2">
-                            <a class="btn btn-sm btn-warning"
-                                href="?edit_form=1&isbn=<?= urlencode($r['isbn']) ?>">
-                                Bearbeiten
-                            </a>
-
-                            <a class="btn btn-sm btn-danger"
-                                href="?delete=<?= urlencode($r['isbn']) ?>"
-                                onclick="return confirm('Willst du dieses Buch wirklich löschen?')">
-                                Löschen
-                            </a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-
-        <!-- BEARBEITEN -->
-        <?php if ($buch): ?>
-            <div class="card mt-4">
-                <div class="card-header">Buch bearbeiten</div>
-                <div class="card-body">
-                    <form method="get">
-                        <input type="hidden" name="old_isbn" value="<?= $buch['isbn'] ?>">
-                        <input class="form-control mb-2" name="edit_titel" value="<?= $buch['titel'] ?>">
-                        <input class="form-control mb-2" name="edit_autor" value="<?= $buch['autor'] ?>">
-                        <input class="form-control mb-2" name="edit_verlag" value="<?= $buch['verlag'] ?>">
-                        <input class="form-control mb-2" name="edit_genre" value="<?= $buch['genre'] ?>">
-                        <textarea class="form-control mb-2" name="edit_beschreibung"><?= $buch['beschreibung'] ?></textarea>
-                        <select name="edit_status" class="form-select w-auto">
-                            <option value="verfügbar">Verfügbar</option>
-                            <option value="ausgeliehen">Ausgeliehen</option>
-                            <option value="reserviert">Reserviert</option>
-                        </select>
-
-                        <button class="btn btn-primary" name="edit">Speichern</button>
-                    </form>
+                <!-- STATISTIK -->
+                <div class="card mb-3">
+                    <div class="card-header">Statistik</div>
+                    <div class="card-body">
+                        <div>
+                            <p>Gesamtzahl Bücher:</p>
+                            <b><?= $gesamtzahl_buecher ?></b>
+                        </div>
+                        <div>
+                            <p>Gesamtzahl Kunden:</p>
+                            <b><?= $gesamtzahl_kunden ?></b>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        <?php endif; ?>
 
+                <!-- SORTIEREN -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <form method="get" class="d-flex gap-3">
+                            <select name="auswahl" class="form-select w-auto">
+                                <option value="buch_nr">Nr</option>
+                                <option value="isbn">ISBN</option>
+                                <option value="titel">Titel</option>
+                                <option value="autor">Autor</option>
+                                <option value="verlag">verlag</option>
+                                <option value="status">Status</option>
+                            </select>
+                            <button class="btn btn-primary" name="abschicken">Sortieren</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- HINZUFÜGEN BUCH-->
+                <div class="card mb-3">
+                    <div class="card-header">Buch hinzufügen</div>
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <input class="form-control" name="add_nr" placeholder="Nr">
+                            <input class="form-control" name="add_isbn" placeholder="ISBN">
+                            <input class="form-control" name="add_titel" placeholder="Titel">
+                            <input class="form-control" name="add_autor" placeholder="Autor">
+                            <input class="form-control" name="add_verlag" placeholder="Verlag">
+                            <input class="form-control" name="add_genre" placeholder="Genre">
+                            <textarea class="form-control" name="add_beschreibung" placeholder="Beschreibung"></textarea>
+                            <select name="add_status" class="form-select">
+                                <option value="verfügbar">Verfügbar</option>
+                                <option value="ausgeliehen">Ausgeliehen</option>
+                                <option value="reserviert">Reserviert</option>
+                            </select>
+                            <button class="btn btn-success" name="add">Hinzufügen</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- SUCHEN -->
+                <form method="get" class="input-group mb-3">
+                    <input class="form-control" name="search_titel" value="<?= htmlspecialchars($search) ?>" placeholder="Titel suchen">
+                    <button class="btn btn-outline-secondary">Suchen</button>
+                </form>
+
+                <!-- TABELLE -->
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nr</th>
+                            <th>ISBN</th>
+                            <th>Titel</th>
+                            <th>Autor</th>
+                            <th>Verlag</th>
+                            <th>Genre</th>
+                            <th>Beschreibung</th>
+                            <th>Status</th>
+                            <th>Aktion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($rows as $r): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($r['buch_nr']) ?></td>
+                                <td><?= htmlspecialchars($r['isbn']) ?></td>
+                                <td><?= htmlspecialchars($r['titel']) ?></td>
+                                <td><?= htmlspecialchars($r['autor']) ?></td>
+                                <td><?= htmlspecialchars($r['verlag']) ?></td>
+                                <td><?= htmlspecialchars($r['genre']) ?></td>
+                                <td><?= htmlspecialchars($r['beschreibung']) ?></td>
+                                <td><?= htmlspecialchars($r['status']) ?></td>
+                                <td class="d-flex gap-2">
+                                    <a class="btn btn-sm btn-warning"
+                                        href="?edit_form=1&isbn=<?= urlencode($r['isbn']) ?>">
+                                        Bearbeiten
+                                    </a>
+                                    <a class="btn btn-sm btn-danger"
+                                        href="?delete=<?= urlencode($r['isbn']) ?>">
+                                        Löschen
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+
+                <!-- BEARBEITEN -->
+                <?php if ($buch): ?>
+                    <div class="card mt-4">
+                        <div class="card-header">Buch bearbeiten</div>
+                        <div class="card-body">
+                            <form method="get">
+                                <input type="hidden" name="old_isbn" value="<?= $buch['isbn'] ?>">
+                                <input class="form-control mb-2" name="edit_isbn" value="<?= $buch['isbn'] ?>">
+                                <input class="form-control mb-2" name="edit_titel" value="<?= $buch['titel'] ?>">
+                                <input class="form-control mb-2" name="edit_autor" value="<?= $buch['autor'] ?>">
+                                <input class="form-control mb-2" name="edit_verlag" value="<?= $buch['verlag'] ?>">
+                                <input class="form-control mb-2" name="edit_genre" value="<?= $buch['genre'] ?>">
+                                <textarea class="form-control mb-2" name="edit_beschreibung"><?= $buch['beschreibung'] ?></textarea>
+                                <input class="form-control mb-2" name="edit_status" value="<?= $buch['status'] ?>">
+                                <button class="btn btn-primary" name="edit">Speichern</button>
+                            </form>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+            </div>
+
+            <!--  TAB 2  -->
+            <div class="tab-pane fade" id="tab-customers">
+
+                <!-- HINZUFÜGEN KUNDE-->
+                <div class="card mb-3">
+                    <div class="card-header">Kunde hinzufügen</div>
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <input class="form-control" name="add_k_nr" placeholder="Nr">
+                            <input class="form-control" name="add_k_name" placeholder="Name">
+                            <input class="form-control" name="add_k_vname" placeholder="Vorname">
+                            <input class="form-control" name="add_k_email" placeholder="E-Mail">
+                            <input class="form-control" name="add_k_tel" placeholder="Telefonnummer">
+                            <input class="form-control" name="add_k_datum" placeholder="Eintragungsdatum">
+                            <button class="btn btn-success" name="add_k">Kunde Hinzufügen</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

@@ -4,38 +4,41 @@
 $allowed_orders = ['isbn', 'titel', 'autor', 'verlag', 'status', 'buch_nr'];
 $order = '';
 
-if (isset($_GET['abschicken'], $_GET['auswahl']) && in_array($_GET['auswahl'], $allowed_orders)) {
-    $order = $_GET['auswahl'];
+if (isset($_POST['abschicken'], $_POST['auswahl']) && in_array($_POST['auswahl'], $allowed_orders)) {
+    $order = $_POST['auswahl'];
 }
 
-$search = $_GET['search_titel'] ?? '';
+$search = $_POST['search_titel'] ?? '';
 
 // HINZUFÜGEN BUCH
-if (isset($_GET['add'])) {
-    $nr = mysqli_real_escape_string($db, $_GET['add_nr']);
-    $isbn = mysqli_real_escape_string($db, $_GET['add_isbn']);
-    $titel = mysqli_real_escape_string($db, $_GET['add_titel']);
-    $autor = mysqli_real_escape_string($db, $_GET['add_autor']);
-    $verlag = mysqli_real_escape_string($db, $_GET['add_verlag']);
-    $genre = mysqli_real_escape_string($db, $_GET['add_genre']);
-    $beschreibung = mysqli_real_escape_string($db, $_GET['add_beschreibung']);
-    $status = mysqli_real_escape_string($db, $_GET['add_status']);
+if (isset($_POST['add'])) {
+    $isbn = mysqli_real_escape_string($db, $_POST['add_isbn']);
+    $titel = mysqli_real_escape_string($db, $_POST['add_titel']);
+    $autor = mysqli_real_escape_string($db, $_POST['add_autor']);
+    $verlag = mysqli_real_escape_string($db, $_POST['add_verlag']);
+    $genre = mysqli_real_escape_string($db, $_POST['add_genre']);
+    $beschreibung = mysqli_real_escape_string($db, $_POST['add_beschreibung']);
+    $status = mysqli_real_escape_string($db, $_POST['add_status']);
 
-    if ($nr && $isbn && $titel && $autor && $verlag && $genre && $beschreibung && $status) {
-        mysqli_query($db, "INSERT INTO t_book VALUES ('$nr','$isbn','$titel','$autor','$verlag','$genre','$beschreibung','$status')");
+    if ($isbn && $titel && $autor && $verlag && $genre && $beschreibung && $status) {
+        // Get the next buch_nr
+        $result = mysqli_query($db, "SELECT MAX(buch_nr) AS max_nr FROM t_book");
+        $row = mysqli_fetch_assoc($result);
+        $next_nr = $row['max_nr'] ? $row['max_nr'] + 1 : 1;
+        mysqli_query($db, "INSERT INTO t_book VALUES ('$next_nr','$isbn','$titel','$autor','$verlag','$genre','$beschreibung','$status')");
     }
 }
 
 // UPDATEN BUCH
-if (isset($_GET['edit'])) {
-    $old_isbn = mysqli_real_escape_string($db, $_GET['old_isbn']);
-    $isbn = mysqli_real_escape_string($db, $_GET['edit_isbn']);
-    $titel = mysqli_real_escape_string($db, $_GET['edit_titel']);
-    $autor = mysqli_real_escape_string($db, $_GET['edit_autor']);
-    $verlag = mysqli_real_escape_string($db, $_GET['edit_verlag']);
-    $genre = mysqli_real_escape_string($db, $_GET['edit_genre']);
-    $beschreibung = mysqli_real_escape_string($db, $_GET['edit_beschreibung']);
-    $status = mysqli_real_escape_string($db, $_GET['edit_status']);
+if (isset($_POST['edit'])) {
+    $old_isbn = mysqli_real_escape_string($db, $_POST['old_isbn']);
+    $isbn = mysqli_real_escape_string($db, $_POST['edit_isbn']);
+    $titel = mysqli_real_escape_string($db, $_POST['edit_titel']);
+    $autor = mysqli_real_escape_string($db, $_POST['edit_autor']);
+    $verlag = mysqli_real_escape_string($db, $_POST['edit_verlag']);
+    $genre = mysqli_real_escape_string($db, $_POST['edit_genre']);
+    $beschreibung = mysqli_real_escape_string($db, $_POST['edit_beschreibung']);
+    $status = mysqli_real_escape_string($db, $_POST['edit_status']);
     mysqli_query($db, "
         UPDATE t_book SET
             isbn='$isbn',
@@ -65,15 +68,15 @@ $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 // BEARBEITEN BUCH
 $buch = null;
-if (isset($_GET['edit_form'])) {
-    $isbn = mysqli_real_escape_string($db, $_GET['isbn']);
+if (isset($_POST['edit_form'])) {
+    $isbn = mysqli_real_escape_string($db, $_POST['isbn']);
     $res = mysqli_query($db, "SELECT * FROM t_book WHERE isbn='$isbn'");
     $buch = mysqli_fetch_assoc($res);
 }
 
 // LÖSCHEN BUCH
-if (isset($_GET['delete'])) {
-    $isbn = mysqli_real_escape_string($db, $_GET['delete']);
+if (isset($_POST['delete'])) {
+    $isbn = mysqli_real_escape_string($db, $_POST['delete']);
 
     if ($isbn !== '') {
         mysqli_query($db, "DELETE FROM t_book WHERE isbn='$isbn'");

@@ -13,17 +13,20 @@ $search = $_GET['search_kunde_nr'] ?? '';
 
 // HINZUFÜGEN KUNDE
 if (isset($_GET['add_kunde'])) {
-    $k_nr = mysqli_real_escape_string($db, $_GET['add_k_nr']);
     $k_vname = mysqli_real_escape_string($db, $_GET['add_k_vname']);
     $k_name = mysqli_real_escape_string($db, $_GET['add_k_name']);
     $k_email = mysqli_real_escape_string($db, $_GET['add_k_email']);
     $k_tel = mysqli_real_escape_string($db, $_GET['add_k_tel']);
     $k_datum = mysqli_real_escape_string($db, $_GET['add_k_datum']);
 
-    if ($k_nr && $k_vname && $k_name && $k_email && $k_tel && $k_datum) {
+    if ($k_vname && $k_name && $k_email && $k_tel && $k_datum) {
+        // Get the next kunden_nr
+        $result = mysqli_query($db, "SELECT MAX(kunden_nr) AS max_nr FROM t_user");
+        $row = mysqli_fetch_assoc($result);
+        $next_nr = $row['max_nr'] ? $row['max_nr'] + 1 : 1;
         mysqli_query($db, "
             INSERT INTO t_user (kunden_nr, vname, name, email, tel, kunde_seit)
-            VALUES ('$k_nr','$k_vname','$k_name','$k_email','$k_tel','$k_datum')
+            VALUES ('$next_nr','$k_vname','$k_name','$k_email','$k_tel','$k_datum')
         ");
     }
 }
@@ -76,7 +79,7 @@ if (isset($_GET['k_edit'])) {
 
 
 // LÖSCHEN KUNDE
-if (isset($_GET['delete'])) {
+if (isset($_GET['k_delete'])) {
     $k_nr = mysqli_real_escape_string($db, $_GET['k_delete']);
 
     if ($k_nr !== '') {

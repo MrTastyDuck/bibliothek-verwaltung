@@ -2,34 +2,35 @@
 <div class="tab-pane fade show active" id="tab-buch">
 
  <!-- STATISTIK -->
- <div class="card mb-3">
-  <div class="card-header">Statistik</div>
-  <div class="card-body">
-   <div>
-    <p>Gesamtzahl Bücher:</p>
-    <b><?= $gesamtzahl_buecher ?></b>
+ <div class="card shadow-sm mb-4 rounded-3 border-0">
+  <div class="card-header bg-primary text-white rounded-top-3 fw-semibold">Statistik</div>
+  <div class="card-body p-4">
+   <div class="row text-center">
+    <div class="col-md-6 mb-3">
+     <div class="p-3 bg-light rounded-3">
+      <p class="mb-1 text-muted fw-semibold fs-5">Gesamtzahl Bücher</p>
+      <h2 class="text-primary mb-0 display-3 fw-bold"><?= $gesamtzahl_buecher ?></h2>
+     </div>
+    </div>
+    <div class="col-md-6 mb-3">
+     <div class="p-3 bg-light rounded-3">
+      <p class="mb-1 text-muted fw-semibold fs-5">Gesamtzahl Kunden</p>
+      <h2 class="text-primary mb-0 display-3 fw-bold"><?= $gesamtzahl_kunden ?></h2>
+     </div>
+    </div>
+    <div class="col-md-6 mb-3">
+     <div class="p-3 bg-light rounded-3">
+      <p class="mb-1 text-muted fw-semibold fs-5">Gesamtzahl Ausleihen</p>
+      <h2 class="text-primary mb-0 display-3 fw-bold"><?= $gesamtzahl_ausleihe ?></h2>
+     </div>
+    </div>
+    <div class="col-md-6 mb-3">
+     <div class="p-3 bg-light rounded-3">
+      <p class="mb-1 text-muted fw-semibold fs-5">Aktive Ausleihen</p>
+      <h2 class="text-primary mb-0 display-3 fw-bold"><?= $gesamtzahl_ausleihe_aktiv ?></h2>
+     </div>
+    </div>
    </div>
-   <div>
-    <p>Gesamtzahl Kunden:</p>
-    <b><?= $gesamtzahl_kunden ?></b>
-   </div>
-  </div>
- </div>
-
- <!-- SORTIEREN -->
- <div class="card mb-3">
-  <div class="card-body">
-   <form method="get" class="d-flex gap-3">
-    <select name="auswahl" class="form-select w-auto">
-     <option value="buch_nr">Nr</option>
-     <option value="isbn">ISBN</option>
-     <option value="titel">Titel</option>
-     <option value="autor">Autor</option>
-     <option value="verlag">verlag</option>
-     <option value="status">Status</option>
-    </select>
-    <button class="btn btn-primary" name="abschicken">Sortieren</button>
-   </form>
   </div>
  </div>
 
@@ -38,8 +39,8 @@
   <div class="card mb-3">
    <div class="card-header">Buch hinzufügen</div>
    <div class="card-body">
-    <form method="get" class="row g-3">
-     <input class="form-control" name="add_nr" placeholder="Nr">
+    <form method="post" class="row g-3">
+     <input type="hidden" name="tab" value="buch">
      <input class="form-control" name="add_isbn" placeholder="ISBN">
      <input class="form-control" name="add_titel" placeholder="Titel">
      <input class="form-control" name="add_autor" placeholder="Autor">
@@ -51,7 +52,7 @@
       <option value="ausgeliehen">Ausgeliehen</option>
       <option value="reserviert">Reserviert</option>
      </select>
-     <button class="btn btn-success" name="add">Hinzufügen</button>
+     <button class="btn btn-primary rounded-pill px-4 fw-semibold" name="add">Hinzufügen</button>
     </form>
    </div>
   </div>
@@ -62,7 +63,8 @@
   <div class="card mt-4">
    <div class="card-header">Buch bearbeiten</div>
    <div class="card-body">
-    <form method="get">
+    <form method="post">
+     <input type="hidden" name="tab" value="buch">
      <input type="hidden" name="old_isbn" value="<?= $buch['isbn'] ?>">
      <input class="form-control mb-2" name="edit_isbn" value="<?= $buch['isbn'] ?>">
      <input class="form-control mb-2" name="edit_titel" value="<?= $buch['titel'] ?>">
@@ -77,52 +79,81 @@
   </div>
  <?php endif; ?>
 
+ <!-- SORTIEREN -->
+ <div class="card shadow-sm mb-4 rounded-3 border-0">
+  <div class="card-body p-4">
+   <form method="post" class="d-flex gap-3 align-items-center">
+    <input type="hidden" name="tab" value="buch">
+    <select name="auswahl" class="form-select rounded-pill w-auto border-primary">
+     <option value="buch_nr">Nr</option>
+     <option value="isbn">ISBN</option>
+     <option value="titel">Titel</option>
+     <option value="autor">Autor</option>
+     <option value="verlag">Verlag</option>
+     <option value="status">Status</option>
+    </select>
+    <button class="btn btn-primary rounded-pill px-4 fw-semibold" name="abschicken">Sortieren</button>
+   </form>
+  </div>
+ </div>
+
  <!-- SUCHEN -->
- <form method="get" class="input-group mb-3">
-  <input class="form-control" name="search_titel" value="<?= htmlspecialchars($search) ?>" placeholder="Titel suchen">
-  <button class="btn btn-outline-secondary">Suchen</button>
- </form>
+ <div class="card shadow-sm mb-4 rounded-3 border-0">
+  <div class="card-body p-4">
+   <form method="post" class="input-group mb-4 shadow-sm">
+    <input class="form-control rounded-pill border-primary" name="search_titel" value="<?= htmlspecialchars($search) ?>" placeholder="Titel suchen">
+    <button class="btn btn-outline-primary rounded-pill px-4 fw-semibold">Suchen</button>
+   </form>
+  </div>
+ </div>
+
 
  <!-- TABELLE -->
- <table class="table table-striped table-bordered">
-  <thead class="table-dark">
-   <tr>
-    <th>Nr</th>
-    <th>ISBN</th>
-    <th>Titel</th>
-    <th>Autor</th>
-    <th>Verlag</th>
-    <th>Genre</th>
-    <th>Beschreibung</th>
-    <th>Status</th>
-    <th>Aktion</th>
-   </tr>
-  </thead>
-  <tbody>
-   <?php foreach ($rows as $r): ?>
+ <div class="table-responsive">
+  <table class="table table-hover table-striped border-0 shadow-sm rounded-3 overflow-hidden">
+   <thead class="bg-primary text-white">
     <tr>
-     <td><?= htmlspecialchars($r['buch_nr']) ?></td>
-     <td><?= htmlspecialchars($r['isbn']) ?></td>
-     <td><?= htmlspecialchars($r['titel']) ?></td>
-     <td><?= htmlspecialchars($r['autor']) ?></td>
-     <td><?= htmlspecialchars($r['verlag']) ?></td>
-     <td><?= htmlspecialchars($r['genre']) ?></td>
-     <td><?= htmlspecialchars($r['beschreibung']) ?></td>
-     <td><?= htmlspecialchars($r['status']) ?></td>
-     <td class="d-flex gap-2">
-      <a class="btn btn-sm btn-warning"
-       href="?edit_form=1&isbn=<?= urlencode($r['isbn']) ?>">
-       Bearbeiten
-      </a>
-      <a class="btn btn-sm btn-danger"
-       href="?delete=<?= urlencode($r['isbn']) ?>"
-       onclick="return confirm('Willst du dieses Buch wirklich löschen?')">
-       Löschen
-      </a>
-     </td>
+     <th class="py-3 px-4">Nr</th>
+     <th class="py-3 px-4">ISBN</th>
+     <th class="py-3 px-4">Titel</th>
+     <th class="py-3 px-4">Autor</th>
+     <th class="py-3 px-4">Verlag</th>
+     <th class="py-3 px-4">Genre</th>
+     <th class="py-3 px-4">Beschreibung</th>
+     <th class="py-3 px-4">Status</th>
+     <th class="py-3 px-4">Aktion</th>
     </tr>
-   <?php endforeach; ?>
-  </tbody>
- </table>
+   </thead>
+   <tbody>
+    <?php foreach ($rows as $r): ?>
+     <tr class="align-middle">
+      <td class="py-3 px-4"><?= htmlspecialchars($r['buch_nr']) ?></td>
+      <td class="py-3 px-4"><?= htmlspecialchars($r['isbn']) ?></td>
+      <td class="py-3 px-4 fw-semibold"><?= htmlspecialchars($r['titel']) ?></td>
+      <td class="py-3 px-4"><?= htmlspecialchars($r['autor']) ?></td>
+      <td class="py-3 px-4"><?= htmlspecialchars($r['verlag']) ?></td>
+      <td class="py-3 px-4"><?= htmlspecialchars($r['genre']) ?></td>
+      <td class="py-3 px-4"><?= htmlspecialchars($r['beschreibung']) ?></td>
+      <td class="py-3 px-4"><span class="badge bg-secondary rounded-pill px-3 py-2"><?= htmlspecialchars($r['status']) ?></span></td>
+      <td class="py-3 px-4">
+       <div class="d-flex gap-2">
+        <form method="post" style="display:inline;">
+         <input type="hidden" name="tab" value="buch">
+         <input type="hidden" name="edit_form" value="1">
+         <input type="hidden" name="isbn" value="<?= htmlspecialchars($r['isbn']) ?>">
+         <button class="btn btn-sm btn-warning rounded-pill px-3 fw-semibold" type="submit">Bearbeiten</button>
+        </form>
+        <form method="post" style="display:inline;" onsubmit="return confirm('Willst du dieses Buch wirklich löschen?')">
+         <input type="hidden" name="tab" value="buch">
+         <input type="hidden" name="delete" value="<?= htmlspecialchars($r['isbn']) ?>">
+         <button class="btn btn-sm btn-danger rounded-pill px-3 fw-semibold" type="submit">Löschen</button>
+        </form>
+       </div>
+      </td>
+     </tr>
+    <?php endforeach; ?>
+   </tbody>
+  </table>
+ </div>
 
 </div>

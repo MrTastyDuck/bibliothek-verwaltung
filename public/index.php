@@ -27,14 +27,6 @@ require_once 'include/liste_aktionen.php';
 
  <?php require_once 'include/liste.php'; ?>
 
- <!-- FOOTER -->
- <footer class="bg-light py-3 border-top">
-  <div class="container d-flex justify-content-end gap-3">
-   <a href="contact.php" class="text-decoration-none">Kontakt</a>
-   <a href="impressum.php" class="text-decoration-none">Impressum</a>
-   <a href="data.php" class="text-decoration-none">Datenschutz</a>
-  </div>
- </footer>
 
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

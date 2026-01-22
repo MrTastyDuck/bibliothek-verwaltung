@@ -1,9 +1,10 @@
 <?php
 // SUCHEN AUSLEIHE
+$search = $_POST['search_verleih'] ?? '';
 $sql = "SELECT * FROM t_ausleihe";
 if ($search) {
     $safe = mysqli_real_escape_string($db, $search);
-    $sql .= " WHERE kunden_nr LIKE '%$safe%'";
+    $sql .= " WHERE kunden_nr LIKE '$safe'";
 }
 
 // HINZUFÜGEN AUSLEIHE

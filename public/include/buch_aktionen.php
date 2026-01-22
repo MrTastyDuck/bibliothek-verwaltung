@@ -8,7 +8,7 @@ if (isset($_POST['abschicken'], $_POST['auswahl']) && in_array($_POST['auswahl']
     $order = $_POST['auswahl'];
 }
 
-$search = $_POST['search_titel'] ?? '';
+
 
 // HINZUFÜGEN BUCH
 if (isset($_POST['add'])) {
@@ -53,10 +53,16 @@ if (isset($_POST['edit'])) {
 }
 
 // SUCHEN BUCH
+$search = $_POST['search_titel'] ?? '';
 $sql = "SELECT * FROM t_book";
 if ($search) {
     $safe = mysqli_real_escape_string($db, $search);
-    $sql .= " WHERE titel LIKE '%$safe%'";
+    $sql .= " 
+        WHERE titel  LIKE '%$safe%'
+           OR autor  LIKE '%$safe%'
+           OR verlag LIKE '%$safe%'
+           OR genre  LIKE '%$safe%'
+    ";
 }
 if ($order) {
     $sql .= " ORDER BY $order";

@@ -8,8 +8,6 @@ if (isset($_GET['sort_kunden'], $_GET['auswahl_sort_kunden']) && in_array($_GET[
     $order = $_GET['auswahl_sort_kunden'];
 }
 
-$search = $_GET['search_kunde_nr'] ?? '';
-
 
 // HINZUFÜGEN KUNDE
 if (isset($_GET['add_kunde'])) {
@@ -20,7 +18,6 @@ if (isset($_GET['add_kunde'])) {
     $k_datum = mysqli_real_escape_string($db, $_GET['add_k_datum']);
 
     if ($k_vname && $k_name && $k_email && $k_tel && $k_datum) {
-        // Get the next kunden_nr
         $result = mysqli_query($db, "SELECT MAX(kunden_nr) AS max_nr FROM t_user");
         $row = mysqli_fetch_assoc($result);
         $next_nr = $row['max_nr'] ? $row['max_nr'] + 1 : 1;
@@ -35,7 +32,6 @@ if (isset($_GET['add_kunde'])) {
 // UPDATEN KUNDE
 if (isset($_GET['k_edit_form'])) {
     $old_k_nr = mysqli_real_escape_string($db, $_GET['old_k_nr']);
-    $k_nr = mysqli_real_escape_string($db, $_GET['edit_k_nr']);
     $k_vname = mysqli_real_escape_string($db, $_GET['edit_k_vname']);
     $k_name = mysqli_real_escape_string($db, $_GET['edit_k_name']);
     $k_email = mysqli_real_escape_string($db, $_GET['edit_k_email']);
@@ -44,7 +40,6 @@ if (isset($_GET['k_edit_form'])) {
 
     mysqli_query($db, "
         UPDATE t_user SET
-            kunden_nr='$k_nr',
             vname='$k_vname',
             name='$k_name',
             email='$k_email',
@@ -56,10 +51,13 @@ if (isset($_GET['k_edit_form'])) {
 
 
 // SUCHEN KUNDE
+$search = $_POST['search_kunden_nr'] ?? '';
 $sql = "SELECT * FROM t_user";
 if ($search) {
     $safe = mysqli_real_escape_string($db, $search);
-    $sql .= " WHERE kunden_nr LIKE '%$safe%'";
+    $sql .= " WHERE kunden_nr LIKE '%$safe%'
+                OR vname LIKE '%$safe%'
+                OR name LIKE '%$safe%'";
 }
 if ($order) {
     $sql .= " ORDER BY $order";

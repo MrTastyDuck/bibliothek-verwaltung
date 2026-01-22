@@ -90,7 +90,7 @@
  <div class="card shadow-sm mb-4 rounded-3 border-0">
   <div class="card-body p-4">
    <form method="post" class="input-group mb-4 shadow-sm">
-    <input class="form-control rounded-pill border-primary" name="search_titel" value="<?= htmlspecialchars($search) ?>" placeholder="Nach Ausleihe per Kunde suchen">
+    <input class="form-control rounded-pill border-primary" name="search_verleih" value="<?= htmlspecialchars($search) ?>" placeholder="Nach Ausleihe per Kunde suchen">
     <button class="btn btn-outline-primary rounded-pill px-4 fw-semibold">Suchen</button>
    </form>
   </div>
